@@ -2,61 +2,50 @@
 
 namespace Database\Seeders;
 
-use App\Enum\Permissions\PermissionsEnum;
-use App\Enum\Roles\RolesEnum;
+use App\Enum\Auth\PermissionsEnum;
+use App\Enum\Auth\RolesEnum;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use RuntimeException;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class RbacSeeder extends Seeder
 {
+    private const GUARD = 'api';
+
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-//        app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
-
-        $guard = 'api';
-
+        $roles = [];
         foreach (RolesEnum::cases() as $role) {
-            Role::findOrCreate($role->value, $guard);
+            $roles[$role->value] = Role::findOrCreate($role->value, self::GUARD);
         }
 
+        $permissions = [];
         foreach (PermissionsEnum::cases() as $permission) {
-            Permission::findOrCreate($permission->value, $guard);
+            $permissions[$permission->value] = Permission::findOrCreate($permission->value, self::GUARD);
         }
 
         app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
 
-        $userRole = Role::findByName(RolesEnum::USER->value, $guard);
-        $adminRole = Role::findByName(RolesEnum::ADMIN->value, $guard);
+        $userRole = $roles[RolesEnum::USER->value] ?? throw new RuntimeException('User role not found!');
+        $adminRole = $roles[RolesEnum::ADMIN->value] ?? throw new RuntimeException('Admin role not found!');
 
         $userRole->syncPermissions([
-            PermissionsEnum::PROFILE_VIEW->value,
+            $permissions[PermissionsEnum::PROFILE_VIEW->value]
+            ?? throw new RuntimeException('Profile view permission not found!')
         ]);
 
         $adminRole->syncPermissions([
-            PermissionsEnum::PROFILE_VIEW->value,
-            PermissionsEnum::ADMIN_VIEW->value,
+            $permissions[PermissionsEnum::PROFILE_VIEW->value]
+            ?? throw new RuntimeException('Profile view permission not found!'),
+            $permissions[PermissionsEnum::ADMIN_VIEW->value]
+            ?? throw new RuntimeException('Admin view permission not found!'),
         ]);
-
-
-
-//        $user = User::firstOrCreate([
-//            'name' => 'user',
-//            'email' => 'user@gmail.com',
-//            'password' => Hash::make('password'),
-//        ]);
-//
-//        $admin = User::firstOrCreate([
-//            'name' => 'admin',
-//            'email' => 'admin@gmail.com',
-//            'password' => Hash::make('password'),
-//        ]);
 
         $user = User::firstOrCreate(
             ['email' => 'user@gmail.com'],
