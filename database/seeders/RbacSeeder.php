@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use RuntimeException;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class RbacSeeder extends Seeder
 {
@@ -18,7 +19,7 @@ class RbacSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run(): void
+    public function run(PermissionRegistrar $permissionRegistrar): void
     {
         $roles = [];
         foreach (RolesEnum::cases() as $role) {
@@ -30,7 +31,7 @@ class RbacSeeder extends Seeder
             $permissions[$permission->value] = Permission::findOrCreate($permission->value, self::GUARD);
         }
 
-        app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+        $permissionRegistrar->forgetCachedPermissions();
 
         $userRole = $roles[RolesEnum::USER->value] ?? throw new RuntimeException('User role not found!');
         $adminRole = $roles[RolesEnum::ADMIN->value] ?? throw new RuntimeException('Admin role not found!');

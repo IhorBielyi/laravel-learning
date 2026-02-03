@@ -6,4 +6,9 @@ enum PermissionsEnum: string
 {
     case PROFILE_VIEW = 'profile.view';
     case ADMIN_VIEW = 'admin.view';
+
+    public function asMiddleware(): string
+    {
+        return 'permission:' . $this->value;
+    }
 }

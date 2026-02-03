@@ -13,9 +13,9 @@ Route::prefix('auth')->group(function () {
 
 Route::middleware('auth:api')->group(function () {
     Route::get('/profile', [ApiController::class, 'showProfile'])
-        ->middleware('permission:' . PermissionsEnum::PROFILE_VIEW->value);
+        ->middleware(PermissionsEnum::PROFILE_VIEW->asMiddleware());
     Route::get('/admin', [ApiController::class, 'showAdmin'])
-        ->middleware('permission:' . PermissionsEnum::ADMIN_VIEW->value);
+        ->middleware(PermissionsEnum::ADMIN_VIEW->asMiddleware());
 });
 
 

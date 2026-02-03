@@ -27,4 +27,19 @@ class RegistrationRequest extends FormRequest
             'password' => ['required','string','min:8','confirmed'],
         ];
     }
+
+    public function getName(): string
+    {
+        return $this->validated('name');
+    }
+
+    public function getEmail(): string
+    {
+        return $this->validated('email');
+    }
+
+    public function getPassword(): string
+    {
+        return $this->validated('password');
+    }
 }

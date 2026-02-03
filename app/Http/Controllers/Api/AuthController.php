@@ -24,12 +24,10 @@ class AuthController extends Controller
 
     public function register(RegistrationRequest $request): JsonResponse
     {
-        $data = $request->validated();
-
         $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
+            'name' => $request->getName(),
+            'email' => $request->getEmail(),
+            'password' => Hash::make($request->getPassword()),
         ]);
 
         $user->assignRole(RolesEnum::USER->value);
@@ -55,9 +53,7 @@ class AuthController extends Controller
      */
     public function login(LoginRequest $request): JsonResponse
     {
-        $credentials = $request->validated();
-
-        if (! $token = auth()->attempt($credentials)) {
+        if (! $token = auth()->attempt($request->getCredentials())) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
