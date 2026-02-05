@@ -42,7 +42,7 @@
     @else
         <div class="alert alert-info mt-4">
             <b>Передайте параметри в URL: provider, delivery, address</b>
-            <p class="mt-2"><b>Наприклад: <a href="#">http://localhost:8888/?provider=НоваПошта&delivery=Поштомат 30222&address=№123 м. Київ, вул. Хрещатик 1</a></b></p>
+            <p class="mt-2"><b>Наприклад: <a href="#">http://localhost:8888/order?provider=НоваПошта&delivery=Поштомат 30222&address=№123 м. Київ, вул. Хрещатик 1</a></b></p>
         </div>
     @endif
 </div>
